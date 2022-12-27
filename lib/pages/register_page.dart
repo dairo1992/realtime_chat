@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:realtime_chat/helpers/mostrar_alerta.dart';
+import 'package:realtime_chat/services/auth_services.dart';
 import 'package:realtime_chat/widgets/widgets.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -58,6 +61,7 @@ class _FormStateState extends State<_FormState> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthServices>(context);
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -83,58 +87,26 @@ class _FormStateState extends State<_FormState> {
             // keyboardType: TextInputType.,
           ),
           CustomBtn(
-            label: 'Ingresar',
+            label: 'Registrarse',
             color: Colors.blue,
-            onPressed: (() {
-              print(dateCtrl.text);
-            }),
+            onPressed: (!authService.autenticando
+                ? () async {
+                    FocusScope.of(context).unfocus();
+                    final registro = await authService.registro(
+                        (nameCtrl.text).trim(),
+                        (emailCtrl.text).trim(),
+                        (passCtrl.text).trim());
+                    if (registro == true) {
+                      // Conectar con sockect server
+                      Navigator.pushReplacementNamed(context, 'usuarios');
+                    } else {
+                      mostrarAlerta(context, 'Registro Incorrecto', registro);
+                    }
+                  }
+                : null),
           )
-          // MaterialButton(
-          //   elevation: 2,
-          //   highlightElevation: 5,
-          //   onPressed: () {
-          //     print('Correo: ${emailCtrl.text} y Contraseña: ${passCtrl.text}');
-          //   },
-          //   color: Colors.blue,
-          //   shape: const StadiumBorder(),
-          //   child: Container(
-          //     width: double.infinity,
-          //     height: 50,
-          //     child: Center(
-          //       child: Text(
-          //         'Ingresar',
-          //         style: TextStyle(color: Colors.white, fontSize: 20),
-          //       ),
-          //     ),
-          //   ),
-          // )
         ],
       ),
     );
   }
 }
-
-// class _Labels extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       child: Column(
-//         children: [
-//           const Text("",
-//               style: TextStyle(
-//                   color: ,
-//                   fontSize: 15,
-//                   fontWeight: FontWeight.w300)),
-//           const SizedBox(
-//             height: 10,
-//           ),
-//           Text(,
-//               style: TextStyle(
-//                   color: ,
-//                   fontSize: 18,
-//                   fontWeight: FontWeight.bold))
-//         ],
-//       ),
-//     );
-//   }
-// }

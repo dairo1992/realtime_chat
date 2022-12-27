@@ -14,6 +14,7 @@ class CustomBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: MaterialButton(
+        disabledColor: Colors.grey,
         elevation: 2,
         highlightElevation: 5,
         onPressed: onPressed,
