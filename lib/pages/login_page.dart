@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:realtime_chat/helpers/mostrar_alerta.dart';
 import 'package:realtime_chat/services/auth_services.dart';
+import 'package:realtime_chat/services/socket_services.dart';
 import 'package:realtime_chat/widgets/widgets.dart';
 
 class LoginPage extends StatelessWidget {
@@ -60,6 +61,7 @@ class _FormStateState extends State<_FormState> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthServices>(context);
+    final socketService = Provider.of<SocketService>(context);
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -79,23 +81,45 @@ class _FormStateState extends State<_FormState> {
             // keyboardType: TextInputType.,
           ),
           CustomBtn(
-            label: 'Ingresar',
-            color: Colors.blue,
-            onPressed: (!authService.autenticando
-                ? () async {
-                    FocusScope.of(context).unfocus();
-                    final loginOk = await authService.login(
-                        (emailCtrl.text).trim(), (passCtrl.text).trim());
-                    if (loginOk) {
-                      // Conectar con sockect server
-                      Navigator.pushReplacementNamed(context, 'usuarios');
-                    } else {
-                      mostrarAlerta(context, 'login Incorrecto',
-                          'revise sus credenciales');
+              label: 'Ingresar',
+              color: Colors.blue,
+              onPressed: authService.autenticando
+                  ? null
+                  : () async {
+                      FocusScope.of(context).unfocus();
+
+                      final loginOk = await authService.login(
+                          emailCtrl.text.trim(), passCtrl.text.trim());
+
+                      if (loginOk) {
+                        socketService.connect();
+                        Navigator.pushReplacementNamed(context, 'usuarios');
+                      } else {
+                        // Mostara alerta
+                        authService.autenticando = false;
+                        // ignore: use_build_context_synchronously
+                        mostrarAlerta(context, 'Login incorrecto',
+                            'Revise sus credenciales nuevamente');
+                      }
                     }
-                  }
-                : null),
-          )
+              //  (!authService.autenticando
+              //     ? () async {
+              //         FocusScope.of(context).unfocus();
+              //         final loginOk = await authService.login(
+              //             (emailCtrl.text).trim(), (passCtrl.text).trim());
+              //         if (loginOk) {
+              //           socketService.connect();
+              //           // ignore: use_build_context_synchronously
+              //           Navigator.pushReplacementNamed(context, 'usuarios');
+              //         } else {
+              //           authService.autenticando = false;
+              //           // ignore: use_build_context_synchronously
+              //           mostrarAlerta(context, 'login Incorrecto',
+              //               'revise sus credenciales');
+              //         }
+              //       }
+              //     : null),
+              )
         ],
       ),
     );

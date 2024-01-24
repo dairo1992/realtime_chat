@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:realtime_chat/helpers/mostrar_alerta.dart';
 import 'package:realtime_chat/services/auth_services.dart';
+import 'package:realtime_chat/services/socket_services.dart';
 import 'package:realtime_chat/widgets/widgets.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -62,6 +63,7 @@ class _FormStateState extends State<_FormState> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthServices>(context);
+    final socketService = Provider.of<SocketService>(context);
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -97,7 +99,7 @@ class _FormStateState extends State<_FormState> {
                         (emailCtrl.text).trim(),
                         (passCtrl.text).trim());
                     if (registro == true) {
-                      // Conectar con sockect server
+                      socketService.connect();
                       Navigator.pushReplacementNamed(context, 'usuarios');
                     } else {
                       mostrarAlerta(context, 'Registro Incorrecto', registro);

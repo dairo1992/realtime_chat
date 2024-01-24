@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class CustomBtn extends StatelessWidget {
   final void Function()? onPressed;
@@ -24,10 +22,14 @@ class CustomBtn extends StatelessWidget {
           width: double.infinity,
           height: 50,
           child: Center(
-            child: Text(
-              label,
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
+            child: onPressed != null
+                ? Text(
+                    label,
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  )
+                : CircularProgressIndicator(
+                    color: Colors.blue,
+                  ),
           ),
         ),
       ),
